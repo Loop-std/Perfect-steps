@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { CLASSES, HOURS, PROGRAMS, STYLE_EVENT, TIMING_EVENT } from "../lib/data";
+import { CLASSES, HOURS, PROGRAMS, STUDIOS, STYLE_EVENT } from "../lib/data";
+
+import { matchesAge, NO_TIMING, SLOT_EVENT, slotLabel, studioName } from "../lib/studioExperience";
+import { RHYTHM_EVENT, type RhythmPreference } from "../lib/rhythmRecommendation";
 
 type Fields = {
   name: string;
@@ -7,6 +10,7 @@ type Fields = {
   guardian: string;
   style: string;
   level: string;
+  studio: string;
   timing: string;
   phone: string;
 };
@@ -17,16 +21,12 @@ const empty: Fields = {
   guardian: "",
   style: "",
   level: "",
-  timing: "",
+  studio: "",
+  timing: NO_TIMING,
   phone: "",
 };
 
 type Errors = Partial<Record<keyof Fields, string>>;
-
-const timings = [
-  "No preference yet",
-  ...CLASSES.map((slot) => `${slot.day} ${slot.time}, ${slot.style}`),
-];
 
 export function TrialForm() {
   const [fields, setFields] = useState<Fields>(empty);
@@ -37,36 +37,64 @@ export function TrialForm() {
   useEffect(() => {
     const onStyle = (event: Event) => {
       const detail = (event as CustomEvent<string>).detail;
-      if (!detail) return;
-      setFields((current) => ({ ...current, style: detail }));
+      if (typeof detail !== "string") return;
+      setFields((current) => ({ ...current, style: detail, timing: NO_TIMING }));
+      setErrors({});
       setSent(null);
     };
-    const onTiming = (event: Event) => {
-      const detail = (event as CustomEvent<string>).detail;
-      if (!detail) return;
-      setFields((current) => ({ ...current, timing: detail }));
+    const onSlot = (event: Event) => {
+      const detail = (event as CustomEvent<{ slotId: string; age?: number }>).detail;
+      const slot = CLASSES.find((item) => item.id === detail?.slotId);
+      if (!slot) return;
+      setFields((current) => ({ ...current, studio: slot.studioId, style: slot.style, level: slot.level, timing: slot.id, age: detail.age === undefined ? current.age : String(detail.age) }));
+      setErrors({});
       setSent(null);
     };
+    const onRhythm = (event: Event) => {
+      const detail = (event as CustomEvent<RhythmPreference>).detail;
+      if (!detail) return;
+      setFields((current) => ({ ...current, age: String(detail.age), style: detail.style, level: detail.level, timing: NO_TIMING, studio: "" }));
+      setErrors({});
+      setSent(null);
+    };
+    window.addEventListener(RHYTHM_EVENT, onRhythm);
     window.addEventListener(STYLE_EVENT, onStyle);
-    window.addEventListener(TIMING_EVENT, onTiming);
+    window.addEventListener(SLOT_EVENT, onSlot);
     return () => {
+      window.removeEventListener(RHYTHM_EVENT, onRhythm);
       window.removeEventListener(STYLE_EVENT, onStyle);
-      window.removeEventListener(TIMING_EVENT, onTiming);
+      window.removeEventListener(SLOT_EVENT, onSlot);
     };
   }, []);
 
+  const sentSlot = CLASSES.find((slot) => slot.id === sent?.timing);
   const ageNumber = Number(fields.age);
   const needsGuardian = fields.age !== "" && !Number.isNaN(ageNumber) && ageNumber < 18;
 
+  const availableSlots = CLASSES.filter((slot) =>
+    (!fields.studio || fields.studio === slot.studioId) &&
+    (!fields.style || fields.style === "Not sure yet" || fields.style === slot.style) &&
+    (!fields.level || fields.level === "Not sure yet" || fields.level === slot.level) &&
+    (!fields.age || matchesAge(slot, ageNumber)));
+
   const set = (key: keyof Fields, value: string) => {
-    setFields((current) => ({ ...current, [key]: value }));
-    setErrors((current) => ({ ...current, [key]: undefined }));
+    setFields((current) => {
+      if (key === "timing" && value !== NO_TIMING) {
+        const slot = CLASSES.find((item) => item.id === value);
+        if (slot) return { ...current, studio: slot.studioId, style: slot.style, level: slot.level, timing: slot.id };
+      }
+      const next = { ...current, [key]: value };
+      const chosen = CLASSES.find((slot) => slot.id === current.timing);
+      if (chosen && (next.studio !== chosen.studioId || next.style !== chosen.style || next.level !== chosen.level || (next.age && !matchesAge(chosen, Number(next.age))))) next.timing = NO_TIMING;
+      return next;
+    });
+    setErrors((current) => ({ ...current, [key]: undefined, timing: undefined }));
   };
 
   const validate = (): Errors => {
     const next: Errors = {};
     if (fields.name.trim().length < 2) next.name = "Add the student’s name.";
-    if (!fields.age || Number.isNaN(ageNumber) || ageNumber < 4 || ageNumber > 80) {
+    if (!fields.age || !Number.isInteger(ageNumber) || ageNumber < 4 || ageNumber > 80) {
       next.age = "Add an age between 4 and 80.";
     }
     if (needsGuardian && fields.guardian.trim().length < 5) {
@@ -74,7 +102,7 @@ export function TrialForm() {
     }
     if (!fields.style) next.style = "Choose a dance style.";
     if (!fields.level) next.level = "Choose a level.";
-    if (!fields.timing) next.timing = "Choose a class or timing.";
+    if (fields.timing !== NO_TIMING && !availableSlots.some((slot) => slot.id === fields.timing)) next.timing = "Choose a matching sample class or no preference.";
     const digits = fields.phone.replace(/\D/g, "");
     if (digits.length < 8 || digits.length > 15) next.phone = "Add a phone number we can read.";
     return next;
@@ -95,7 +123,7 @@ export function TrialForm() {
           <p className="kicker accent">A first class</p>
           <h2 className="campaign-display trial__title">Your first step starts here.</h2>
           <p className="trial__copy">
-            Tell us who is dancing, which style, and when you can come. This demo keeps the note on the page. It does
+            Tell us who is dancing, which studio and style, and when you can come. This demo keeps the note on the page. It does
             not book a class or message the academy.
           </p>
           <button type="button" className="btn btn-ghost trial__btn" onClick={() => setWhatsappNote(true)}>
@@ -135,8 +163,12 @@ export function TrialForm() {
                   </dd>
                 </div>
                 <div>
+                  <dt className="trial__dt">Preferred studio</dt>
+                  <dd>{studioName(sent.studio)}</dd>
+                </div>
+                <div>
                   <dt className="trial__dt">Timing</dt>
-                  <dd>{sent.timing}</dd>
+                  <dd>{sentSlot ? slotLabel(sentSlot) : NO_TIMING}</dd>
                 </div>
                 <div>
                   <dt className="trial__dt">Phone</dt>
@@ -231,6 +263,14 @@ export function TrialForm() {
                 ) : null}
               </label>
 
+              <label className="trial__span">
+                Preferred studio
+                <select className="field" name="studio" value={fields.studio} onChange={(event) => set("studio", event.target.value)}>
+                  <option value="">No studio preference</option>
+                  {STUDIOS.map((studio) => <option key={studio.id} value={studio.id}>{studio.name} (demo)</option>)}
+                </select>
+              </label>
+
               <label>
                 Preferred dance style
                 <select
@@ -242,6 +282,7 @@ export function TrialForm() {
                   aria-describedby={errors.style ? "err-style" : undefined}
                 >
                   <option value="">Choose a style</option>
+                  <option>Not sure yet</option>
                   {PROGRAMS.map((program) => (
                     <option key={program.id} value={program.name}>
                       {program.name}
@@ -280,6 +321,7 @@ export function TrialForm() {
 
               <label className="trial__span">
                 Preferred class or timing
+                <span className="trial__hint">Sample weekend sessions matching your preferences. No class is reserved.</span>
                 <select
                   className="field"
                   name="timing"
@@ -288,11 +330,12 @@ export function TrialForm() {
                   aria-invalid={Boolean(errors.timing)}
                   aria-describedby={errors.timing ? "err-timing" : undefined}
                 >
-                  <option value="">Choose a sample slot</option>
-                  {timings.map((timing) => (
-                    <option key={timing}>{timing}</option>
+                  <option value={NO_TIMING}>{NO_TIMING}</option>
+                  {availableSlots.map((slot) => (
+                    <option key={slot.id} value={slot.id}>{slotLabel(slot)}</option>
                   ))}
                 </select>
+                {availableSlots.length === 0 && <span className="trial__hint">No matching sample sessions. You can still prepare a general enquiry.</span>}
                 {errors.timing ? (
                   <span id="err-timing" className="trial__error" role="alert">
                     {errors.timing}

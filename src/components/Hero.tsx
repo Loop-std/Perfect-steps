@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { scrollToId } from "../lib/scroll";
 import { HeroMusic } from "./HeroMusic";
 
@@ -9,9 +9,18 @@ const VIDEO =
 const LINES = ["Find", "your", "rhythm"] as const;
 
 export function Hero() {
+  const [posterFailed, setPosterFailed] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [reduced, setReduced] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
   useEffect(() => {
     const video = document.getElementById("heroVideo") as HTMLVideoElement | null;
-    if (!video) return;
+    if (!video || reduced || videoFailed) return;
 
     const reveal = () => video.classList.add("is-ready");
     if (video.readyState >= 3) reveal();
@@ -26,19 +35,21 @@ export function Hero() {
     window.addEventListener("click", kick, { once: true });
 
     return () => {
+      video.removeEventListener("loadeddata", reveal);
       window.removeEventListener("touchstart", kick);
       window.removeEventListener("click", kick);
     };
-  }, []);
+  }, [reduced, videoFailed]);
 
   return (
     <section className="hero" id="top">
       <div className="hero__media">
         <img
-          src={POSTER}
-          alt="A vintage turntable resting on a mossy rock in an alpine meadow at golden hour"
+          src={posterFailed ? "/media/n.jpg" : POSTER}
+          onError={() => setPosterFailed(true)}
+          alt={posterFailed ? "Dancers rehearsing together in a studio" : "A vintage turntable resting on a mossy rock in an alpine meadow at golden hour"}
         />
-        <video
+        {!reduced && !videoFailed && <video
           id="heroVideo"
           autoPlay
           muted
@@ -48,7 +59,8 @@ export function Hero() {
           poster={POSTER}
           aria-hidden="true"
           src={VIDEO}
-        />
+          onError={() => setVideoFailed(true)}
+        />}
       </div>
 
       <div className="hero__inner">
@@ -65,8 +77,8 @@ export function Hero() {
             More than dance lessons. A room to learn the phrase, repeat it until it sticks, and find how you move.
           </p>
           <div className="hero__actions">
-            <button type="button" className="hero__quiet" onClick={() => scrollToId("programs")}>
-              Explore classes
+            <button type="button" className="hero__quiet" onClick={() => scrollToId("rhythm")}>
+              Find my rhythm
             </button>
             <a
               className="btn-play"
@@ -79,7 +91,7 @@ export function Hero() {
               Book a free trial
             </a>
           </div>
-          <button type="button" className="hero__scroll" onClick={() => scrollToId("about")}>
+          <button type="button" className="hero__scroll" onClick={() => scrollToId("rhythm")}>
             Scroll
             <i />
           </button>

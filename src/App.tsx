@@ -1,6 +1,9 @@
 import { SmoothScroll } from "./components/SmoothScroll";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
+import { RhythmFinder } from "./components/RhythmFinder";
+import { About } from "./components/About";
+import { StudioFinder } from "./components/StudioFinder";
 import { Programs } from "./components/Programs";
 import { Gallery } from "./components/Gallery";
 import { Instructors } from "./components/Instructors";
@@ -23,8 +26,10 @@ export default function App() {
       <Navbar />
       <main id="main" className="campaign">
         <Hero />
-        <div id="about" className="anchor" />
+        <RhythmFinder />
+        <About />
         <Programs />
+        <StudioFinder />
         <Gallery />
         <Instructors />
         <Schedule />

@@ -1,0 +1,90 @@
+.rhythm { overflow: clip; }
+.rhythm__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 7rem); align-items: start; }
+.rhythm__title { font-size: clamp(2.8rem, 6.3vw, 6.6rem); margin-block: 1.25rem; }
+.rhythm__title span { color: #a83f23; }
+.rhythm__lede { max-width: 32rem; font-size: 1.1rem; line-height: 1.65; color: #514d49; }
+.rhythm__visual { margin-top: 2.5rem; max-width: 33rem; }
+.rhythm__visual img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+.rhythm__visual figcaption { margin-top: .7rem; color: #595550; font-size: .7rem; text-transform: uppercase; letter-spacing: .14em; }
+.rhythm__panel { background: var(--char, #171717); color: var(--off, #f5f2ed); padding: clamp(1.25rem, 3.5vw, 3.2rem); }
+.rhythm__eyebrow { color: #e2ad96; }
+.rhythm__form, .rhythm__result { display: grid; gap: 1.65rem; margin-top: 1.8rem; }
+.rhythm__form fieldset { min-width: 0; border: 0; padding: 0; margin: 0; }
+.rhythm__form legend, .rhythm__age > span { margin-bottom: .8rem; font-size: 1rem; font-weight: 500; }
+.rhythm__form legend > span, .rhythm__age b { color: #e2ad96; font-size: .7rem; margin-right: .65rem; font-weight: 500; letter-spacing: .12em; }
+.rhythm__options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+.rhythm__levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; }
+.rhythm__option { display: flex; align-items: flex-start; gap: .55rem; border: 1px solid #68625d; padding: .85rem; cursor: pointer; min-width: 0; transition: background .2s, border-color .2s; }
+.rhythm__option:hover { border-color: #e2ad96; }
+.rhythm__option:has(input:checked) { background: #493025; border-color: #e2ad96; }
+.rhythm__option:focus-within { outline: 2px solid #f5f2ed; outline-offset: 3px; }
+.rhythm__option input { flex: 0 0 auto; margin-top: .22rem; accent-color: #e2ad96; }
+.rhythm__option strong, .rhythm__option small { display: block; }
+.rhythm__option strong { font-weight: 500; font-size: .94rem; line-height: 1.35; }
+.rhythm__option small { font-size: .78rem; line-height: 1.4; color: #c5bdb7; margin-top: .35rem; }
+.rhythm__level { align-items: center; padding: .65rem .5rem; font-size: .83rem; }
+.rhythm__level input { margin: 0; }
+.rhythm__age { display: grid; }
+.rhythm__age input { background: #24211f; border: 1px solid #68625d; color: #f5f2ed; width: 100%; min-height: 48px; padding: .8rem 1rem; }
+.rhythm__age input::placeholder { color: #c5bdb7; }
+.rhythm__submit { background: #f5f2ed; color: #171717; display: flex; justify-content: space-between; gap: .8rem; align-items: center; padding: .95rem 1.2rem; text-align: left; font-weight: 600; min-height: 48px; transition: background .2s; }
+.rhythm__submit:hover { background: #e2ad96; }
+.rhythm__submit:focus-visible, .rhythm__reset:focus-visible, .rhythm__age input:focus-visible { outline: 2px solid #e2ad96; outline-offset: 3px; }
+.rhythm__fine { color: #c5bdb7; font-size: .75rem; line-height: 1.5; margin-top: 1.2rem; }
+.rhythm__error { color: #ffc6b5; font-size: .85rem; }
+.rhythm__result { gap: 1rem; }
+.rhythm__result h3 { font-size: clamp(1.9rem, 3.5vw, 3.6rem); }
+.rhythm__result p:not(.kicker) { line-height: 1.6; }
+.rhythm__result-image { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.rhythm__meta { font-size: .85rem; color: #e2ad96; }
+.rhythm__reset { text-align: left; width: fit-content; color: #f5f2ed; text-decoration: underline; text-underline-offset: .3em; padding: .4rem 0; }
+@media (max-width: 1000px) { .rhythm__layout { grid-template-columns: 1fr; } .rhythm__visual { max-width: 100%; } .rhythm__visual img { aspect-ratio: 16/8; } }
+@media (max-width: 480px) { .rhythm__options, .rhythm__levels { grid-template-columns: 1fr; } .rhythm__title { font-size: clamp(2.2rem, 10vw, 3rem); } }
+@media (prefers-reduced-motion: reduce) { .rhythm__option, .rhythm__submit { transition: none; } }
+
+/* An original, silent vector choreography for the rhythm discovery section. */
+.rhythm-dolls__stage { display: block; width: 100%; height: auto; aspect-ratio: 16/10; background: #29231f; }
+.rhythm-dolls__caption { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; }
+.rhythm-dolls__toggle { color: #595550; font: inherit; font-size: .7rem; letter-spacing: .04em; text-transform: none; text-decoration: underline; text-underline-offset: .2em; padding: .35rem 0; }
+.rhythm-dolls__toggle:focus-visible { outline: 2px solid #a83f23; outline-offset: 3px; }
+.rhythm-doll { --beat: 2.4s; --phase: 0s; }
+.rhythm-doll--two { --phase: -.6s; }
+.rhythm-doll--three { --phase: -1.2s; }
+.rhythm-doll__joint { transform-origin: 0 0; }
+.rhythm-doll__bounce { animation: doll-bounce var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__torso { animation: doll-sway var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__head { animation: doll-nod var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__arm-left { animation: doll-arm-left var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__arm-right { animation: doll-arm-right var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__forearm-left { animation: doll-elbow-left var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__forearm-right { animation: doll-elbow-right var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__leg-left { animation: doll-leg-left var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__leg-right { animation: doll-leg-right var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__shin-left { animation: doll-knee-left var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-doll__shin-right { animation: doll-knee-right var(--beat) ease-in-out var(--phase) infinite; }
+.rhythm-dolls__beat { animation: doll-count 2.4s ease-in-out infinite; }
+.rhythm-dolls__wave { animation: doll-wave 1.2s ease-in-out infinite; }
+.rhythm-dolls--paused * { animation-play-state: paused !important; }
+@keyframes doll-bounce { 0%, 50%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-9px); } }
+@keyframes doll-sway { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes doll-nod { 0%, 100% { transform: rotate(7deg); } 50% { transform: rotate(-7deg); } }
+@keyframes doll-arm-left { 0%, 100% { transform: rotate(62deg); } 25% { transform: rotate(112deg); } 50% { transform: rotate(30deg); } 75% { transform: rotate(78deg); } }
+@keyframes doll-arm-right { 0%, 100% { transform: rotate(-30deg); } 25% { transform: rotate(-78deg); } 50% { transform: rotate(-62deg); } 75% { transform: rotate(-112deg); } }
+@keyframes doll-elbow-left { 0%, 100% { transform: rotate(45deg); } 50% { transform: rotate(-35deg); } }
+@keyframes doll-elbow-right { 0%, 100% { transform: rotate(35deg); } 50% { transform: rotate(-45deg); } }
+@keyframes doll-leg-left { 0%, 100% { transform: rotate(13deg); } 25% { transform: rotate(31deg); } 50% { transform: rotate(8deg); } 75% { transform: rotate(16deg); } }
+@keyframes doll-leg-right { 0%, 100% { transform: rotate(-8deg); } 25% { transform: rotate(-16deg); } 50% { transform: rotate(-13deg); } 75% { transform: rotate(-31deg); } }
+@keyframes doll-knee-left { 0%, 100% { transform: rotate(-8deg); } 25% { transform: rotate(-35deg); } 50%, 75% { transform: rotate(0); } }
+@keyframes doll-knee-right { 0%, 25%, 100% { transform: rotate(0); } 50% { transform: rotate(8deg); } 75% { transform: rotate(35deg); } }
+@keyframes doll-count { 0%, 25% { opacity: 1; } 35%, 100% { opacity: .25; } }
+@keyframes doll-wave { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .rhythm-dolls * { animation: none !important; }
+  .rhythm-dolls__toggle { display: none; }
+  .rhythm-doll__arm-left { transform: rotate(72deg); }
+  .rhythm-doll__arm-right { transform: rotate(-55deg); }
+  .rhythm-doll__forearm-left { transform: rotate(25deg); }
+  .rhythm-doll__forearm-right { transform: rotate(-25deg); }
+  .rhythm-doll__leg-left { transform: rotate(12deg); }
+  .rhythm-doll__leg-right { transform: rotate(-12deg); }
+}
