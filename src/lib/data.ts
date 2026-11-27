@@ -8,6 +8,7 @@ export const NAV = [
   { href: "top", label: "Home" },
   { href: "about", label: "About" },
   { href: "programs", label: "Programs" },
+  { href: "studios", label: "Studios" },
   { href: "schedule", label: "Schedule" },
   { href: "instructors", label: "Instructors" },
   { href: "contact", label: "Contact" },
@@ -124,30 +125,41 @@ export const EXPERIENCE = [
 
 export type Level = "Beginner" | "Intermediate" | "Advanced";
 
+export const STUDIOS = [
+  { id: "north", name: "North studio", area: "North zone", image: "/media/n.jpg", alt: "Dancers rehearsing together", description: "A starting point for younger dancers and first classes." },
+  { id: "central", name: "Central studio", area: "Central zone", image: "/media/d.jpg", alt: "Adults practising choreography in a mirrored studio", description: "A space to explore expression, technique and musicality." },
+  { id: "south", name: "South studio", area: "South zone", image: "/media/p5.jpg", alt: "A dance performance in front of an audience", description: "A meeting point for energetic movement and performance." },
+] as const;
+export type StudioId = (typeof STUDIOS)[number]["id"];
+export type WeekendDay = "Saturday" | "Sunday";
 export type ClassSlot = {
   id: string;
-  style: string;
-  day: string;
+  studioId: StudioId;
+  style: (typeof PROGRAMS)[number]["name"];
+  day: WeekendDay;
   time: string;
   level: Level;
   ages: string;
+  minAge: number;
+  maxAge?: number;
+  instructor: string;
 };
 
+// Illustrative assignments only. Replace with client-approved studio and faculty data.
 export const CLASSES: ClassSlot[] = [
-  { id: "mon-beginner", style: "Beginner dance training", day: "Monday", time: "5:00–6:00 pm", level: "Beginner", ages: "16+" },
-  { id: "mon-hiphop", style: "Hip-hop", day: "Monday", time: "6:15–7:30 pm", level: "Intermediate", ages: "14+" },
-  { id: "tue-kids", style: "Kids dance", day: "Tuesday", time: "4:30–5:30 pm", level: "Beginner", ages: "7–11" },
-  { id: "tue-contemp", style: "Contemporary", day: "Tuesday", time: "6:00–7:15 pm", level: "Intermediate", ages: "14+" },
-  { id: "wed-bolly", style: "Bollywood", day: "Wednesday", time: "5:00–6:15 pm", level: "Beginner", ages: "13+" },
-  { id: "wed-free", style: "Freestyle", day: "Wednesday", time: "6:30–7:45 pm", level: "Intermediate", ages: "16+" },
-  { id: "thu-kids", style: "Kids dance", day: "Thursday", time: "4:30–5:30 pm", level: "Beginner", ages: "7–11" },
-  { id: "thu-hiphop", style: "Hip-hop", day: "Thursday", time: "6:00–7:30 pm", level: "Advanced", ages: "16+" },
-  { id: "fri-contemp", style: "Contemporary", day: "Friday", time: "5:30–6:45 pm", level: "Beginner", ages: "14+" },
-  { id: "sat-kids", style: "Kids dance", day: "Saturday", time: "9:00–10:00 am", level: "Beginner", ages: "7–11" },
-  { id: "sat-bolly", style: "Bollywood", day: "Saturday", time: "10:30–11:45 am", level: "Intermediate", ages: "13+" },
-  { id: "sat-free", style: "Freestyle", day: "Saturday", time: "12:00–1:15 pm", level: "Advanced", ages: "16+" },
-  { id: "sat-beginner", style: "Beginner dance training", day: "Saturday", time: "4:00–5:15 pm", level: "Beginner", ages: "16+" },
-  { id: "sun-contemp", style: "Contemporary", day: "Sunday", time: "10:00–11:30 am", level: "Advanced", ages: "16+" },
+  { id: "sat-n-kids", studioId: "north", style: "Kids dance", day: "Saturday", time: "9:00–10:00 am", level: "Beginner", ages: "7–11", minAge: 7, maxAge: 11, instructor: "Kids faculty (TBD)" },
+  { id: "sat-c-contemp", studioId: "central", style: "Contemporary", day: "Saturday", time: "9:00–10:15 am", level: "Beginner", ages: "14+", minAge: 14, instructor: "Mira Sen" },
+  { id: "sat-s-hiphop", studioId: "south", style: "Hip-hop", day: "Saturday", time: "9:00–10:15 am", level: "Beginner", ages: "13+", minAge: 13, instructor: "Arun Desai" },
+  { id: "sat-n-beginner", studioId: "north", style: "Beginner dance training", day: "Saturday", time: "10:30–11:45 am", level: "Beginner", ages: "16+", minAge: 16, instructor: "Jonah Ellis" },
+  { id: "sat-c-bolly", studioId: "central", style: "Bollywood", day: "Saturday", time: "10:30–11:45 am", level: "Intermediate", ages: "13+", minAge: 13, instructor: "Leela Kapoor" },
+  { id: "sat-c-contemp-int", studioId: "central", style: "Contemporary", day: "Saturday", time: "2:00–3:15 pm", level: "Intermediate", ages: "14+", minAge: 14, instructor: "Mira Sen" },
+  { id: "sat-s-free", studioId: "south", style: "Freestyle", day: "Saturday", time: "3:00–4:15 pm", level: "Advanced", ages: "16+", minAge: 16, instructor: "Jonah Ellis" },
+  { id: "sun-n-bolly", studioId: "north", style: "Bollywood", day: "Sunday", time: "9:00–10:15 am", level: "Beginner", ages: "13+", minAge: 13, instructor: "Leela Kapoor" },
+  { id: "sun-c-free", studioId: "central", style: "Freestyle", day: "Sunday", time: "9:00–10:15 am", level: "Intermediate", ages: "16+", minAge: 16, instructor: "Jonah Ellis" },
+  { id: "sun-s-kids", studioId: "south", style: "Kids dance", day: "Sunday", time: "9:00–10:00 am", level: "Beginner", ages: "7–11", minAge: 7, maxAge: 11, instructor: "Kids faculty (TBD)" },
+  { id: "sun-n-hiphop", studioId: "north", style: "Hip-hop", day: "Sunday", time: "10:30–11:45 am", level: "Intermediate", ages: "13+", minAge: 13, instructor: "Arun Desai" },
+  { id: "sun-c-contemp", studioId: "central", style: "Contemporary", day: "Sunday", time: "10:30 am–12:00 pm", level: "Advanced", ages: "14+", minAge: 14, instructor: "Mira Sen" },
+  { id: "sun-s-hiphop", studioId: "south", style: "Hip-hop", day: "Sunday", time: "3:00–4:30 pm", level: "Advanced", ages: "13+", minAge: 13, instructor: "Arun Desai" },
 ];
 
 export const STYLES = [
@@ -265,14 +277,13 @@ export const FAQS = [
   },
   {
     q: "How do I find the right dance program?",
-    a: "Read the six programs, then filter the sample timetable by style and level. If you are unsure, choose beginner training and say so on the form.",
+    a: "Try the Rhythm Finder, explore the six programs, then filter the weekend timetable by studio, style and level.",
   },
 ] as const;
 
 export const HOURS = [
-  { day: "Monday to Friday", time: "4:00–9:00 pm" },
   { day: "Saturday", time: "9:00 am–6:00 pm" },
-  { day: "Sunday", time: "10:00 am–1:00 pm" },
+  { day: "Sunday", time: "9:00 am–6:00 pm" },
 ] as const;
 
 export const STYLE_EVENT = "prefect-style";
@@ -292,7 +303,9 @@ export const FOOTER_GROUPS = [
     links: [
       { label: "About the Academy", href: "#about" },
       { label: "Dance Programs", href: "#programs" },
-      { label: "Class Schedule", href: "#schedule" },
+      { label: "Find Your Rhythm", href: "#rhythm" },
+      { label: "Studio Network", href: "#studios" },
+      { label: "Weekend Schedule", href: "#schedule" },
       { label: "Our Instructors", href: "#instructors" },
       { label: "Gallery", href: "#gallery" },
     ],

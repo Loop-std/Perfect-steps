@@ -49,7 +49,7 @@ export function Navbar() {
       if (event.key === "Escape") setOpen(false);
     };
     const onResize = () => {
-      if (window.innerWidth > 900) setOpen(false);
+      if (window.innerWidth > 1150) setOpen(false);
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
@@ -132,6 +132,7 @@ export function Navbar() {
       </div>
 
       <div
+        inert={!open}
         className={`menu${open ? " is-open" : ""}`}
         id="menu"
         onClick={(event) => {
